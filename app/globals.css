@@ -38,8 +38,8 @@
   --shadow-dark-100: 0px 2px 10px 0px rgba(46, 52, 56, 0.1);
   --shadow-dark-200: 2px 0px 20px 0px rgba(39, 36, 36, 0.04);
 
-  --background-image-auth-dark: url("public/images/auth-dark.png");
-  --background-image-auth-light: url("public/images/auth-light.png");
+  --background-image-auth-dark: url("/images/auth-dark.png");
+  --background-image-auth-light: url("/images/auth-light.png");
 
   --breakpoint-xs: 420px;
 
@@ -268,11 +268,6 @@
 }
 
 @utility dark-gradient {
-  background: linear-gradient(
-          232deg,
-          rgba(23, 28, 35, 0.41) 0%,
-          rgba(19, 22, 28, 0.7) 100%
-  );
   background: linear-gradient(
           232deg,
           rgba(23, 28, 35, 0.41) 0%,
