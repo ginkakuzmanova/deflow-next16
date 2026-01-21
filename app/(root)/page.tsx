@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ROUTES from "@/constants/routes";
 import LocalSearch from "@/components/search/LocalSearch";
+import HomeFilter from "@/components/filters/HomeFilter";
 
 const Page = async ({ searchParams }: RouteParams) => {
-  const { query = "" } = await searchParams;
+  const { query = "", filter = "" } = await searchParams;
   return (
     <>
       <section className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -25,7 +26,7 @@ const Page = async ({ searchParams }: RouteParams) => {
         />
       </section>
 
-      {/*  COMP HOME FILTER*/}
+      <HomeFilter />
 
       <div className={"mt-10 flex w-full flex-col gap-6"}>
         <p>Question 1 card based on the filters</p>
