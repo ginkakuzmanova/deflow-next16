@@ -4,6 +4,7 @@ import Link from "next/link";
 import ROUTES from "@/constants/routes";
 import LocalSearch from "@/components/search/LocalSearch";
 import HomeFilter from "@/components/filters/HomeFilter";
+import QuestionCard from "@/components/cards/QuestionCard";
 
 const Page = async ({ searchParams }: RouteParams) => {
   const { query = "", filter = "" } = await searchParams;
@@ -32,6 +33,8 @@ const Page = async ({ searchParams }: RouteParams) => {
         <p>Question 1 card based on the filters</p>
         <p>Question 2 card</p>
         <p>Question 3 card</p>
+        {/*  QUESTION CARD*/}
+        {/* TODO: <QuestionCard question={{}} key={} hook to database />*/}
       </div>
     </>
   );
