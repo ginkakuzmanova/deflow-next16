@@ -91,7 +91,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
         const result = { success: true, data: { _id: "1" }, error: { message: "" }, status: "pending" };
 
         if (result.success) {
-          toast("Success", {
+          toast.success("Success", {
             description: "Question updated successfully",
           });
 
@@ -173,6 +173,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 Tags <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl>
+                {/*Form control allows us to have only 1 child:why wrapped in div*/}
                 <div>
                   <Input
                     className="paragraph-regular background-light700_dark300 light-border-2 text-dark300_light700 no-focus min-h-[56px] border"
