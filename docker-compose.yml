@@ -1,0 +1,25 @@
+# DEMO PURPOSES
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"   # host:container (connect from your machine / Next.js)
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      # Optional: creates an initial database (not a user)
+      MONGO_INITDB_DATABASE: appdb
+    volumes:
+      - mongodb_data:/data/db
+    # Optional (nice-to-have): healthcheck so other services can wait for mongo
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "mongodb://root:example@localhost:27017/admin", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodb_data:
+    driver: local
