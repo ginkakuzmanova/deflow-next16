@@ -1,5 +1,5 @@
 import { model, models, Schema, Types, Document } from "mongoose";
-
+//  Purpose: users can save posts or questions for future reference
 export interface ICollection {
   author: Types.ObjectId;
   question: Types.ObjectId;

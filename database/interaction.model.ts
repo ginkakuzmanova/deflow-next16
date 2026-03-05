@@ -1,5 +1,5 @@
 import { Schema, models, model, Types, Document } from "mongoose";
-
+// purpose: track user actions intended for suggesting algorithms
 export interface IInteraction {
   user: Types.ObjectId;
   action: string;
