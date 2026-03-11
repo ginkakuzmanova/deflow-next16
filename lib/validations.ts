@@ -26,11 +26,7 @@ export const SignUpSchema = z.object({
       message: "Name can only contain letters and spaces.",
     }),
 
-  email: z
-    .string()
-    .min(1, { message: "Email is required." })
-    .email({ message: "Please provide a valid email address." }),
-
+  email: z.email({ message: "Please provide a valid email address." }).min(1, { message: "Email is required." }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters long." })
@@ -106,8 +102,8 @@ export const SignInWithOAuthSchema = z.object({
   user: z.object({
     name: z.string().min(1, "Name is required"),
     username: z.string().min(3, "Username must be at least 3 characters"),
-    email: z.string().email("Invalid email address"),
-    image: z.string().url("Invalid image URL").optional(),
+    email: z.email("Invalid email address"),
+    image: z.url("Invalid image URL").optional(),
   }),
 });
 
