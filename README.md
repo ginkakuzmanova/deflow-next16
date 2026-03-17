@@ -12,6 +12,7 @@
     <img src="https://img.shields.io/badge/-MongoDB-black?style=for-the-badge&logoColor=white&logo=mongodb&color=47A248" alt="mongodb" />
     <img src="https://img.shields.io/badge/-ShadCN_UI-black?style=for-the-badge&logoColor=white&logo=shadcnui&color=000000" alt="shadcnui" />
     <img src="https://img.shields.io/badge/-Open_AI-black?style=for-the-badge&logoColor=white&logo=openai&color=412991" alt="openai" />
+    <img src="https://img.shields.io/badge/docker-257bd6?style=for-the-badge&logo=docker&logoColor=white" alt="docker">
   </div>
 
 </div>
@@ -43,6 +44,7 @@ If you're getting started and need assistance or encounter any bugs, you can joi
 - NextAuth
 - Open AI
 - MongoDB
+- Docker
 - ShadCN UI
 - TypeScript
 - TailwindCSS
@@ -50,7 +52,7 @@ If you're getting started and need assistance or encounter any bugs, you can joi
 
 ## <a name="features">🔋 Features</a>
 
-👉 **Authentication**: Secure sign-in with NextAuth, supporting Email/Password, Google, and GitHub.
+👉 **Authentication**: Secure sign-in with NextAuth, supporting Email/Password and GitHub.
 
 👉 **Home Page**: Displays questions with filters, search, and pagination for easy navigation.
 
@@ -113,8 +115,8 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/JavaScript-Mastery-Pro/jsmasterypro_devflow.git
-cd jsmasterypro_devflow
+git clone https://github.com/ginkakuzmanova/deflow-next16.git
+cd deflow-next16
 ```
 
 **Installation**
