@@ -38,6 +38,7 @@ const TagDetails = async ({ params, searchParams }: RouteParams) => {
       <DataRenderer
         success={success}
         data={questions}
+        error={error}
         empty={EMPTY_QUESTION}
         render={(questions) => (
           <div className="mt-10 flex w-full flex-col gap-6">
