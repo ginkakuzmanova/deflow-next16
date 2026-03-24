@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { type ClientSession } from "mongoose";
 import "@/database";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
@@ -31,4 +31,24 @@ export async function connectDB(): Promise<typeof mongoose> {
 
   cached.conn = await cached.promise;
   return cached.conn;
+}
+
+export async function runInTransaction<T>(executor: (session: ClientSession) => Promise<T>): Promise<T> {
+  await connectDB();
+
+  const session = await mongoose.startSession();
+
+  try {
+    const result = await session.withTransaction(async () => {
+      return executor(session);
+    });
+
+    if (result === undefined) {
+      throw new Error("Transaction failed without a result");
+    }
+
+    return result;
+  } finally {
+    await session.endSession();
+  }
 }

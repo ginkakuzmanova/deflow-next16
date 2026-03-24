@@ -1,7 +1,7 @@
 "use server";
 
 import { cache } from "react";
-import mongoose, { QueryFilter as FilterQuery, Types, type ClientSession } from "mongoose";
+import { QueryFilter as FilterQuery, Types } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 
@@ -12,7 +12,7 @@ import TagQuestion from "@/database/tag-question.model";
 import Tag, { ITagDoc } from "@/database/tag.model";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/handlers/error";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB, runInTransaction } from "@/lib/mongodb";
 import {
   AskQuestionSchema,
   DeleteQuestionSchema,
@@ -23,26 +23,6 @@ import {
 } from "@/lib/validations";
 
 import { createInteraction } from "./interaction.action";
-
-async function runInTransaction<T>(executor: (session: ClientSession) => Promise<T>): Promise<T> {
-  await connectDB();
-
-  const session = await mongoose.startSession();
-
-  try {
-    const result = await session.withTransaction(async () => {
-      return executor(session);
-    });
-
-    if (result === undefined) {
-      throw new Error("Transaction completed without a result");
-    }
-
-    return result;
-  } finally {
-    await session.endSession();
-  }
-}
 
 export async function createQuestion(params: CreateQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
