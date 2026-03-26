@@ -84,10 +84,10 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
         editorRef.current.setMarkdown(formattedAnswer);
 
         form.setValue("content", formattedAnswer);
-        form.trigger("content");
+        await form.trigger("content");
       }
 
-      toast.success("AI generated answer has been generated");
+      toast.success("AI answer has been generated");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "There was a problem with your request");
     } finally {
