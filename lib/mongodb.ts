@@ -40,14 +40,19 @@ export async function runInTransaction<T>(executor: (session: ClientSession) => 
 
   try {
     const result = await session.withTransaction(async () => {
-      return executor(session);
+      return await executor(session);
     });
 
-    if (result === undefined) {
-      throw new Error("Transaction failed without a result");
+    return result as T;
+  } catch (error) {
+    // withTransaction() already aborts on thrown errors.
+    // This is just a defensive fallback in case something throws
+    // before the transaction is fully cleaned up.
+    if (session.inTransaction()) {
+      await session.abortTransaction();
     }
 
-    return result;
+    throw error;
   } finally {
     await session.endSession();
   }

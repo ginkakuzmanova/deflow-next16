@@ -1,6 +1,6 @@
 "use server";
 
-import mongoose, { ClientSession } from "mongoose";
+import { ClientSession } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 
@@ -11,6 +11,7 @@ import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { CreateVoteSchema, HasVotedSchema, UpdateVoteCountSchema } from "../validations";
 import { createInteraction } from "./interaction.action";
+import { runInTransaction } from "@/lib/mongodb";
 
 async function updateVoteCount(params: UpdateVoteCountParams, session?: ClientSession): Promise<ActionResponse> {
   const validationResult = await action({
@@ -28,7 +29,11 @@ async function updateVoteCount(params: UpdateVoteCountParams, session?: ClientSe
   const voteField = voteType === "upvote" ? "upvotes" : "downvotes";
 
   try {
-    const result = await Model.findByIdAndUpdate(targetId, { $inc: { [voteField]: change } }, { new: true, session });
+    const result = await Model.findByIdAndUpdate(
+      targetId,
+      { $inc: { [voteField]: change } },
+      { returnDocument: "after", session }
+    );
 
     if (!result) throw new Error("Failed to update vote count");
 
@@ -52,50 +57,79 @@ export async function createVote(params: CreateVoteParams): Promise<ActionRespon
   const { targetId, targetType, voteType } = validationResult.params!;
   const userId = validationResult.session?.user?.id;
 
-  if (!userId) return handleError(new Error("Unauthorized")) as ErrorResponse;
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  if (!userId) {
+    return handleError(new Error("Unauthorized")) as ErrorResponse;
+  }
 
   try {
-    const Model = targetType === "question" ? Question : Answer;
+    const result = await runInTransaction(async (session) => {
+      const Model = targetType === "question" ? Question : Answer;
 
-    const contentDoc = await Model.findById(targetId).session(session);
-    if (!contentDoc) throw new Error("Content not found");
+      const contentDoc = await Model.findById(targetId).session(session);
+      if (!contentDoc) {
+        throw new Error("Model not found");
+      }
 
-    const contentAuthorId = contentDoc.author.toString();
+      const contentAuthorId = contentDoc.author.toString();
 
-    const existingVote = await Vote.findOne({
-      author: userId,
-      actionId: targetId,
-      actionType: targetType,
-    }).session(session);
+      const existingVote = await Vote.findOne({
+        author: userId,
+        actionId: targetId,
+        actionType: targetType,
+      }).session(session);
 
-    if (existingVote) {
-      if (existingVote.voteType === voteType) {
-        // If user is voting again with the same vote type, remove the vote
-        await Vote.deleteOne({ _id: existingVote._id }).session(session);
-        await updateVoteCount(
-          {
-            targetId,
-            targetType,
-            voteType,
-            change: -1,
-          },
-          session
-        );
+      if (existingVote) {
+        if (existingVote.voteType === voteType) {
+          // Same vote again => remove vote
+          await Vote.deleteOne({ _id: existingVote._id }).session(session);
+
+          await updateVoteCount(
+            {
+              targetId,
+              targetType,
+              voteType,
+              change: -1,
+            },
+            session
+          );
+        } else {
+          // Change existing vote type
+          await Vote.findByIdAndUpdate(existingVote._id, { voteType }, { new: true, session });
+
+          await updateVoteCount(
+            {
+              targetId,
+              targetType,
+              voteType: existingVote.voteType,
+              change: -1,
+            },
+            session
+          );
+
+          await updateVoteCount(
+            {
+              targetId,
+              targetType,
+              voteType,
+              change: 1,
+            },
+            session
+          );
+        }
       } else {
-        // If user is changing their vote, update voteType and adjust counts
-        await Vote.findByIdAndUpdate(existingVote._id, { voteType }, { new: true, session });
-        await updateVoteCount(
-          {
-            targetId,
-            targetType,
-            voteType: existingVote.voteType,
-            change: -1,
-          },
-          session
+        // First-time vote
+        await Vote.create(
+          [
+            {
+              author: userId,
+              actionId: targetId,
+              actionType: targetType,
+              voteType,
+            },
+          ],
+          { session }
         );
+
         await updateVoteCount(
           {
             targetId,
@@ -106,49 +140,25 @@ export async function createVote(params: CreateVoteParams): Promise<ActionRespon
           session
         );
       }
-    } else {
-      // First-time vote creation
-      await Vote.create(
-        [
-          {
-            author: userId,
-            actionId: targetId,
-            actionType: targetType,
-            voteType,
-          },
-        ],
-        { session }
-      );
-      await updateVoteCount(
-        {
-          targetId,
-          targetType,
-          voteType,
-          change: 1,
-        },
-        session
-      );
-    }
 
-    // log the interaction
+      return {
+        contentAuthorId,
+      };
+    });
+
     after(async () => {
       await createInteraction({
         action: voteType,
         actionId: targetId,
         actionTarget: targetType,
-        authorId: contentAuthorId,
+        authorId: result.contentAuthorId,
       });
     });
-
-    await session.commitTransaction();
-    session.endSession();
 
     revalidatePath(`/questions/${targetId}`);
 
     return { success: true };
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     return handleError(error) as ErrorResponse;
   }
 }
