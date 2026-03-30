@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import ROUTES from "@/constants/routes";
-// import { hasVoted } from "@/lib/actions/vote.action";
+import { hasVoted } from "@/lib/actions/vote.action";
 import { cn, getTimeStamp } from "@/lib/utils";
 
 import { Preview } from "../editor/Preview";
 import UserAvatar from "../UserAvatar";
-// import Votes from "../votes/Votes";
+import Votes from "../votes/Votes";
 // import EditDeleteAction from "../user/EditDeleteAction";
 
 interface Props extends Answer {
@@ -28,10 +28,10 @@ const AnswerCard = ({
   showReadMore = false,
   showActionBtns = false,
 }: Props) => {
-  // const hasVotedPromise = hasVoted({
-  //   targetId: _id,
-  //   targetType: "answer",
-  // });
+  const hasVotedPromise = hasVoted({
+    targetId: _id,
+    targetType: "answer",
+  });
 
   return (
     <article className={cn("light-border relative border-b py-10", containerClasses)}>
@@ -63,15 +63,15 @@ const AnswerCard = ({
         </div>
 
         <div className="flex justify-end">
-          {/*<Suspense fallback={<div>Loading...</div>}>*/}
-          {/*  <Votes*/}
-          {/*    targetType="answer"*/}
-          {/*    targetId={_id}*/}
-          {/*    hasVotedPromise={hasVotedPromise}*/}
-          {/*    upvotes={upvotes}*/}
-          {/*    downvotes={downvotes}*/}
-          {/*  />*/}
-          {/*</Suspense>*/}
+          <Suspense fallback={<div>Loading...</div>}>
+            <Votes
+              targetType="answer"
+              targetId={_id}
+              hasVotedPromise={hasVotedPromise}
+              upvotes={upvotes}
+              downvotes={downvotes}
+            />
+          </Suspense>
         </div>
       </div>
 
