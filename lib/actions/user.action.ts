@@ -82,6 +82,8 @@ export async function getUsers(params: PaginatedSearchParams): Promise<
 export async function getUser(params: GetUserParams): Promise<
   ActionResponse<{
     user: User;
+    totalQuestions?: number;
+    totalAnswers?: number;
   }>
 > {
   const validationResult = await action({
@@ -99,10 +101,15 @@ export async function getUser(params: GetUserParams): Promise<
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
+    const totalQuestions = await Question.countDocuments({ author: userId });
+    const totalAnswers = await Answer.countDocuments({ author: userId });
+
     return {
       success: true,
       data: {
         user: JSON.parse(JSON.stringify(user)),
+        totalQuestions,
+        totalAnswers,
       },
     };
   } catch (error) {
