@@ -9,8 +9,10 @@ import { EMPTY_QUESTION, EMPTY_TAGS } from "@/constants/states";
 import { getTopTags } from "@/lib/actions/tag.action";
 
 const RightSidebar = async () => {
-  const { success, data, error } = await getHotQuestions();
-  const { success: tagsSuccess, data: tags, error: tagsError } = await getTopTags();
+  const [{ success, data, error }, { success: tagsSuccess, data: tags, error: tagsError }] = await Promise.all([
+    getHotQuestions(),
+    getTopTags(),
+  ]);
 
   const hotQuestions = data || [];
 
