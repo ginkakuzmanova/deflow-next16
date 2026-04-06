@@ -20,12 +20,6 @@ const StatsCard = ({ imgUrl, value, title }: StatsCardProps) => {
   );
 };
 
-interface BadgeCounts {
-  GOLD: number;
-  SILVER: number;
-  BRONZE: number;
-}
-
 interface Props {
   totalQuestions: number;
   totalAnswers: number;

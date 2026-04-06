@@ -57,7 +57,7 @@ interface UpdateVoteCountParams extends CreateVoteParams {
   change: 1 | -1;
 }
 
-type HasVotedParams = Pick<CreateVoteParams, "targetId" | "targetType">;
+interface HasVotedParams extends Pick<CreateVoteParams, "targetId" | "targetType"> {}
 
 interface HasVotedResponse {
   hasUpvoted: boolean;
