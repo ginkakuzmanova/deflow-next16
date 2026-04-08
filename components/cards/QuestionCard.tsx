@@ -3,6 +3,7 @@ import Link from "next/link";
 import ROUTES from "@/constants/routes";
 import TagCard from "@/components/cards/TagCard";
 import Metric from "@/components/Metric";
+import EditDeleteAction from "@/components/user/EditDeleteAction";
 
 interface Props {
   question: Question;
@@ -25,8 +26,7 @@ const QuestionCard = ({
           </Link>
         </div>
 
-        {/*TODO:  <EditDeleteAction type="Question" itemId={_id} />*/}
-        {showActionBtns && "delete"}
+        {showActionBtns && <EditDeleteAction type="Question" itemId={_id} />}
       </div>
 
       <div className={"mt-3.5 flex w-full flex-wrap gap-2"}>
