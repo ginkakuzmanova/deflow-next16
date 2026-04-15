@@ -1,6 +1,4 @@
 "use server";
-
-import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 
@@ -27,8 +25,6 @@ export async function createAnswer(params: CreateAnswerParams): Promise<ActionRe
 
   const { content, questionId } = validationResult.params!;
   const userId = validationResult.session?.user?.id;
-
-  const session = await mongoose.startSession();
 
   try {
     // check if the question exists
